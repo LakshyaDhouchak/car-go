@@ -1,6 +1,5 @@
 package com.lakshya.car_go.entity;
 
-import java.lang.reflect.AccessFlag.Location;
 import java.time.Instant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,7 +34,7 @@ public class car {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "current_location_id",nullable= false)
-    private Location currentLocation;
+    private location currentLocation;
 
     @Column(name ="created_at")
     private Instant createdAt;
