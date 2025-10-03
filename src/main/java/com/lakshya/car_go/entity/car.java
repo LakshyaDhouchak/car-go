@@ -1,5 +1,6 @@
 package com.lakshya.car_go.entity;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,7 +28,7 @@ public class car {
     private String licensePlate;
 
     @Column(name = "daily_rate",nullable = false,precision = 10, scale = 2)
-    private Double dailyRate;
+    private BigDecimal dailyRate;
 
     @Column(name = "Carstatus",nullable=false,length = 12)
     private String carStatus;
