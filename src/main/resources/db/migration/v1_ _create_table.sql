@@ -36,6 +36,6 @@ CREATE TABLE IF NOT EXISTS booking(
     end_date Date NOT NULL,
     bookingStatus VARCHAR(20) NOT NULL,
     totalPrice DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY(carid) REFERENCES car(id),
-    FOREIGN KEY(userid) REFERENCES user(id)
+    FOREIGN KEY(car_id) REFERENCES car(id),
+    FOREIGN KEY(user_id) REFERENCES user(id)
 );
