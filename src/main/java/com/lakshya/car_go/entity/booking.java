@@ -1,5 +1,6 @@
 package com.lakshya.car_go.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import jakarta.persistence.Column;
@@ -43,5 +44,5 @@ public class booking {
     private String bookingStatus;
 
     @Column(name ="total_price",nullable = false,precision = 10,scale = 2)
-    private Double totalPrice;
+    private BigDecimal totalPrice;
 }
