@@ -2,6 +2,7 @@ package com.lakshya.car_go.dto;
 
 import java.time.LocalDate;
 
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -23,6 +24,7 @@ public class BookingCreateRequestDTO {
     private LocalDate startDate;
 
     @NotNull(message = "End date is required")
+    @Future
     private LocalDate endDate;
 
 }
