@@ -35,7 +35,7 @@ public class booking {
     private car car;
 
     @Column(name = "start_date", nullable = false)
-    private LocalDate starDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date",nullable = false)
     private LocalDate endDate;
