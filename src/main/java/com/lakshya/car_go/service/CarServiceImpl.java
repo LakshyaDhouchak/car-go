@@ -1,12 +1,15 @@
 package com.lakshya.car_go.service;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors; 
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.lakshya.car_go.ExceptionHandling.ResourceNotFoundException;
+import com.lakshya.car_go.ExceptionHandling.DataConflictException;
+import com.lakshya.car_go.ExceptionHandling.InvalidInputException;
 
 import com.lakshya.car_go.dto.CarCreateRequestDTO;
 import com.lakshya.car_go.dto.CarResponseDTO;
@@ -18,7 +21,7 @@ import com.lakshya.car_go.repository.locationRepository;
 
 
 @Service
-public class CarServiceImpl  implements CarService{
+public class CarServiceImpl implements CarService{
     // define the properties
     private final carRepository carRepo;
     private final locationRepository locationRepo;
@@ -31,105 +34,102 @@ public class CarServiceImpl  implements CarService{
 
     // define the methord
     private CarResponseDTO mapToResponseDTO(car car){
-        // calling the CarResponseDTO Object
         CarResponseDTO dto = new CarResponseDTO();
         dto.setId(car.getId());
         dto.setLicensePlate(car.getLicensePlate());
         dto.setDailyRate(car.getDailyRate());
         dto.setCarStatus(car.getCarStatus());
-        dto.setCurrentLocationId(car.getCurrentLocation().getId());
-        dto.setCurrentLocationName(car.getCurrentLocation().getName());
+        if (car.getCurrentLocation() != null) {
+            dto.setCurrentLocationId(car.getCurrentLocation().getId());
+            dto.setCurrentLocationName(car.getCurrentLocation().getName());
+        }
         return dto;
     }
 
     @Override
     @Transactional
     public CarResponseDTO createCar(CarCreateRequestDTO dto) {
-        // define the condition
+        
+        
         if(carRepo.findByLicensePlate(dto.getLicensePlate()).isPresent()){
-            throw new RuntimeException("Car Already Present");
+            throw new DataConflictException("Car with license plate '" + dto.getLicensePlate() + "' already exists.");
         }
-        // caling the car class Object
+        
+        
+        location locationExist = locationRepo.findById(dto.getLocationId())
+            .orElseThrow(() -> new ResourceNotFoundException("Location not found with ID: " + dto.getLocationId()));
+        
+        if (dto.getDailyRate() == null || dto.getDailyRate().doubleValue() <= 0) {
+            throw new InvalidInputException("Daily rate must be a positive value.");
+        }
+
+        // Caling the car class Object
         car newCar = new car();
         newCar.setLicensePlate(dto.getLicensePlate());
         newCar.setDailyRate(dto.getDailyRate());
-        newCar.setCarStatus("Available");
+        newCar.setCarStatus("Available"); 
         newCar.setCreatedAt(Instant.now()); 
-
-        // define the condition
-        Optional<location> locationOpt = locationRepo.findById(dto.getLocationId());
-        if(locationOpt.isPresent()){
-            location locationExist = locationOpt.get();
-            newCar.setCurrentLocation(locationExist);
-            car saveCar = carRepo.save(newCar); 
-            return mapToResponseDTO(saveCar);
-        }
-        throw new RuntimeException("LocationId is not Present ");
+        newCar.setCurrentLocation(locationExist);
         
+        car saveCar = carRepo.save(newCar); 
+        return mapToResponseDTO(saveCar);
     }
 
     @Override
     @Transactional(readOnly = true)
     public CarResponseDTO getCarId(String licensePlate) {
-        // define the condition
-        Optional<car> carOpt = carRepo.findByLicensePlate(licensePlate);
-        if(carOpt.isPresent()){
-            return mapToResponseDTO(carOpt.get());
-        }
-        throw new RuntimeException(" Car not found");
+        car carExist = carRepo.findByLicensePlate(licensePlate)
+            .orElseThrow(() -> new ResourceNotFoundException("Car not found with license plate: " + licensePlate));
+            
+        return mapToResponseDTO(carExist);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<CarResponseDTO> getAllCar() {
-        // define the ArrayList
-        List<car> cars = carRepo.findAll();
-        List<CarResponseDTO> carList = new ArrayList<>();
-        // define the for-each loop
-        for(car car : cars){
-            carList.add(mapToResponseDTO(car));
-        }
-        return carList;
+        return carRepo.findAll().stream()
+            .map(this::mapToResponseDTO)
+            .collect(Collectors.toList());
     }
 
     @Override
     @Transactional
     public CarResponseDTO updateCar(String licensePlate, CarUpdateRequestDTO dto) {
-        Optional<car> carOpt = carRepo.findByLicensePlate(licensePlate);
-        // define the condition
-        if(carOpt.isPresent()){
-            car carExist = carOpt.get();
-            if(dto.getCarStatus()!= null){
-                carExist.setCarStatus(dto.getCarStatus());
-            }
-            if(dto.getDailyRate()!=null){
-                carExist.setDailyRate(dto.getDailyRate());
-            }
-            if(dto.getLocationId()!= null){
-                Optional<location> locationOpt = locationRepo.findById(dto.getLocationId());
-                if(locationOpt.isPresent()){
-                    carExist.setCurrentLocation(locationOpt.get());
-                }
-                else{
-                    throw new RuntimeException("LocationId not Found");
-                }
-            }
-            car updateCar = carRepo.save(carExist);
-            return mapToResponseDTO(updateCar);
+        
+        car carExist = carRepo.findByLicensePlate(licensePlate)
+            .orElseThrow(() -> new ResourceNotFoundException("Car not found with license plate: " + licensePlate));
+            
+        if(dto.getCarStatus()!= null){
+            carExist.setCarStatus(dto.getCarStatus());
         }
-        throw new RuntimeException("Car not Found");
+        
+        if(dto.getDailyRate()!=null){
+            if (dto.getDailyRate().doubleValue() <= 0) {
+                throw new InvalidInputException("Daily rate must be a positive value for update.");
+            }
+            carExist.setDailyRate(dto.getDailyRate());
+        }
+        
+        if(dto.getLocationId()!= null){
+            location locationExist = locationRepo.findById(dto.getLocationId())
+                .orElseThrow(() -> new ResourceNotFoundException("Location not found with ID: " + dto.getLocationId()));
+            
+            carExist.setCurrentLocation(locationExist);
+        }
+        
+        car updateCar = carRepo.save(carExist);
+        return mapToResponseDTO(updateCar);
     }
 
     @Override
     @Transactional
     public void deleteCar(String licensePlate) {
-        // define the condition
+        
         if(carRepo.existsByLicensePlate(licensePlate)){
             carRepo.deleteByLicensePlate(licensePlate);
         }
         else{
-            System.out.println("Car not found");
+            throw new ResourceNotFoundException("Car not found with license plate: " + licensePlate + " for deletion.");
         }
     }
-    
 }
