@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors; // Added for cleaner list mapping
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,9 +22,11 @@ import com.lakshya.car_go.ExceptionHandling.DataConflictException;
 public class UserServiceImpl implements UserService {
     // define the properties
     private final userRepository userRepo;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(userRepository userRepo){
+    public UserServiceImpl(userRepository userRepo,PasswordEncoder passwordEncoder){
         this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // define the mapToResponseDTO() methord
@@ -48,7 +51,8 @@ public class UserServiceImpl implements UserService {
         // calling the user class Onject
         user newUser = new user();
         newUser.setEmail(dto.getEmail());
-        newUser.setHashedPassword(dto.getPassword());
+        String HashedPassword = passwordEncoder.encode(dto.getPassword());
+        newUser.setHashedPassword(HashedPassword);
         newUser.setRole("User"); 
         newUser.setFirstName(dto.getFirstName());
         newUser.setCreatedAt(Instant.now());
@@ -92,7 +96,8 @@ public class UserServiceImpl implements UserService {
         } 
         
         if(dto.getPassword()!=null){
-            existUser.setHashedPassword(dto.getPassword());
+            String HashedPassword = passwordEncoder.encode(dto.getPassword());
+            existUser.setHashedPassword(HashedPassword);
         } 
             
         user updatedUser = userRepo.save(existUser);
