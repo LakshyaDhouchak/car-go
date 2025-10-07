@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(DataConflictException.class,carUnavailableException.class)
+    @ExceptionHandler({DataConflictException.class,CarUnavailableException.class})
     public ResponseEntity<ErrorResponsDTO> handleConflictException(RuntimeException ex){
         ErrorResponsDTO error = new ErrorResponsDTO(ex.getMessage(),HttpStatus.CONFLICT.value(),"CONFLICT",Instant.now());
         return new ResponseEntity<>(error , HttpStatus.CONFLICT);
