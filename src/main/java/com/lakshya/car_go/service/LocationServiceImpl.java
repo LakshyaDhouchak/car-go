@@ -1,8 +1,7 @@
 package com.lakshya.car_go.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors; // Using stream for cleaner list mapping
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +11,11 @@ import com.lakshya.car_go.dto.LocationResponseDTO;
 import com.lakshya.car_go.dto.LocationUpdateRequestDTO;
 import com.lakshya.car_go.entity.location;
 import com.lakshya.car_go.repository.locationRepository;
+
+
+import com.lakshya.car_go.ExceptionHandling.ResourceNotFoundException;
+import com.lakshya.car_go.ExceptionHandling.DataConflictException;
+
 
 @Service
 public class LocationServiceImpl implements LocationService {
@@ -25,7 +29,6 @@ public class LocationServiceImpl implements LocationService {
 
     // define the methord
     private LocationResponseDTO mapToResponseDTO(location location){
-        // calling the responseDTO class Object
         LocationResponseDTO dto = new LocationResponseDTO();
         dto.setId(location.getId());
         dto.setName(location.getName());
@@ -37,79 +40,67 @@ public class LocationServiceImpl implements LocationService {
     @Transactional
     @Override
     public LocationResponseDTO createLocation(LocationCreateRequestDTO dto){
-        // calling the Location class Object
-        location newLocation = new location();
-        // define the condition
+    
         if(locationRepo.findByNameAndAddress(dto.getName(),dto.getAddress()).isPresent()){
-            throw new RuntimeException("Location already present");
+            throw new DataConflictException("Location with name '" + dto.getName() + 
+                                            "' and address '" + dto.getAddress() + "' already exists.");
         }
+        
+        location newLocation = new location();
         newLocation.setName(dto.getName());
         newLocation.setAddress(dto.getAddress());
 
         location savedLocation = locationRepo.save(newLocation);
 
         return mapToResponseDTO(savedLocation);
-
     }
 
     // define the getByLocationId() methord
     @Override
     @Transactional(readOnly = true)
     public LocationResponseDTO getLocationId(Long id){
-        // define the condition
-        Optional<location> locationFound = locationRepo.findById(id);
-        // define the condition
-        if(locationFound.isPresent()){
-            return mapToResponseDTO(locationFound.get());
-        }
-        throw new RuntimeException(" Location Not Found");
+        return locationRepo.findById(id)
+            .map(this::mapToResponseDTO)
+            .orElseThrow(() -> new ResourceNotFoundException("Location not found with ID: " + id));
     }
 
     // define the getAllLocation() methord
     @Override
     @Transactional(readOnly = true)
     public List<LocationResponseDTO> getAllLocation(){
-        List<location> locations = locationRepo.findAll();
-        // create the ArrayList
-        List<LocationResponseDTO> responseList =  new ArrayList<>();
-        // define the for- each loop
-        for(location location : locations){
-            responseList.add(mapToResponseDTO(location));
-        }
-        return responseList;
+        
+        return locationRepo.findAll().stream()
+            .map(this::mapToResponseDTO)
+            .collect(Collectors.toList());
     }
 
     // define the updateLocation() methord
     @Override
     @Transactional
     public LocationResponseDTO updateLocation(Long id ,LocationUpdateRequestDTO dto){
-        Optional<location> locationOpt = locationRepo.findById(id);
-        // define the condition
-        if(locationOpt.isPresent()){
-            location locationExist = locationOpt.get();
-            if(dto.getName()!= null){
-                locationExist.setName(dto.getName());
-            }
-            if(dto.getAddress()!=null){
-                locationExist.setAddress(dto.getAddress());
-            }
-
-            location updtedLocation = locationRepo.save(locationExist);
-            return mapToResponseDTO(updtedLocation);
+        
+        location locationExist = locationRepo.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Location not found with ID: " + id));
+            
+        
+        if(dto.getName()!= null){
+            locationExist.setName(dto.getName());
         }
-        throw new RuntimeException("Location Not Found");
+        if(dto.getAddress()!=null){
+            locationExist.setAddress(dto.getAddress());
+        }
+
+        location updtedLocation = locationRepo.save(locationExist);
+        return mapToResponseDTO(updtedLocation);
     }
 
     // define the deleteLocation() methord
     @Override
     @Transactional
     public void deleteLocation(Long id){
-        // define the condition
-        if(locationRepo.existsById(id)){
-            locationRepo.deleteById(id);
+        if(!locationRepo.existsById(id)){
+            throw new ResourceNotFoundException("Location not found with ID: " + id + " for deletion.");
         }
-        else{
-            System.out.println("WARNING !! Try to delete Non-exist location");
-        }
+        locationRepo.deleteById(id);
     }
 }
