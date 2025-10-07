@@ -9,6 +9,9 @@ import java.util.stream.Collectors; // Added for cleaner list mapping
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.lakshya.car_go.ExceptionHandling.CarUnavailableException;
+import com.lakshya.car_go.ExceptionHandling.InvalidInputException;
+import com.lakshya.car_go.ExceptionHandling.ResourceNotFoundException;
 import com.lakshya.car_go.dto.BookingCreateRequestDTO;
 import com.lakshya.car_go.dto.BookingResponseDTO;
 import com.lakshya.car_go.dto.BookingUpdateRequestDTO;
@@ -54,14 +57,14 @@ public class BookingServiceImpl implements BookingService{
 
     private long calculateDurationDays(LocalDate startDate, LocalDate endDate) {
         if (startDate.isAfter(endDate)) {
-            throw new RuntimeException("Start date cannot be after end date.");
+            throw new InvalidInputException("Start date cannot be after end date.");
         }
         
         // Duration is inclusive of the start and end day (+1)
         long days = ChronoUnit.DAYS.between(startDate, endDate) + 1; 
 
         if (days <= 0) {
-             throw new RuntimeException("Booking duration must be at least one day.");
+             throw new InvalidInputException("Booking duration must be at least one day.");
         }
         return days;
     }
@@ -72,14 +75,14 @@ public class BookingServiceImpl implements BookingService{
         
         // 1. Find User by UserId (FIXED: Used dto.getUserId())
         user userFound = userRepo.findById(dto.getUserId())
-            .orElseThrow(() -> new RuntimeException("User not found with ID: " + dto.getUserId()));
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + dto.getUserId()));
 
         // 2. Find Car by CarId and check availability
         car carFound = carRepo.findById(dto.getCarId())
-            .orElseThrow(() -> new RuntimeException("Car not found with ID: " + dto.getCarId()));
+            .orElseThrow(() -> new ResourceNotFoundException("Car not found with ID: " + dto.getCarId()));
         
         if (!"Available".equalsIgnoreCase(carFound.getCarStatus())) {
-             throw new RuntimeException("Car is not available for booking.");
+             throw new CarUnavailableException("Car is not available for booking.");
         }
 
         // 3. Calculate price (FIXED: Used carFound.getDailyRate())
@@ -107,7 +110,7 @@ public class BookingServiceImpl implements BookingService{
     @Transactional(readOnly = true)
     public BookingResponseDTO findBookingById(Long id) {
         booking bookingExist = bookingRepo.findById(id)
-            .orElseThrow(() -> new RuntimeException("Booking not found with ID: " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + id));
             
         return mapToResponseDTO(bookingExist);
     }
@@ -126,7 +129,7 @@ public class BookingServiceImpl implements BookingService{
         
         // Retrieve booking using orElseThrow for cleaner code
         booking existingBooking = bookingRepo.findById(id)
-            .orElseThrow(() -> new RuntimeException("Booking not found with ID: " + id));
+            .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + id));
 
         // Determine new start/end dates, defaulting to existing if DTO is null
         LocalDate newStartDate = dto.getStartDate() != null ? dto.getStartDate() : existingBooking.getStartDate();
@@ -158,7 +161,7 @@ public class BookingServiceImpl implements BookingService{
             bookingRepo.deleteById(id);
         } else {
             // Throwing an exception is often better than a print statement in a Service layer
-            throw new RuntimeException("Booking not found with ID: " + id + " for deletion.");
+            throw new ResourceNotFoundException("Booking not found with ID: " + id + " for deletion.");
         }
     }
 }
