@@ -80,7 +80,14 @@ public class BookingServiceImpl implements BookingService{
         // 2. Find Car by CarId and check availability
         car carFound = carRepo.findById(dto.getCarId())
             .orElseThrow(() -> new ResourceNotFoundException("Car not found with ID: " + dto.getCarId()));
-        
+
+        boolean isOverlap =  bookingRepo.existOverlapping(carFound.getId() , dto.getStartDate(), dto.getEndDate());
+        // define the condition
+        if(isOverlap){
+            throw new CarUnavailableException("Car is already booked for the specified date range (" + 
+                                               dto.getStartDate() + " to " + dto.getEndDate() + ").");
+        }
+
         if (!"Available".equalsIgnoreCase(carFound.getCarStatus())) {
              throw new CarUnavailableException("Car is not available for booking.");
         }
@@ -127,15 +134,37 @@ public class BookingServiceImpl implements BookingService{
     @Transactional
     public BookingResponseDTO updateBooking(Long id, BookingUpdateRequestDTO dto) {
         
-        // Retrieve booking using orElseThrow for cleaner code
         booking existingBooking = bookingRepo.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + id));
 
-        // Determine new start/end dates, defaulting to existing if DTO is null
         LocalDate newStartDate = dto.getStartDate() != null ? dto.getStartDate() : existingBooking.getStartDate();
         LocalDate newEndDate = dto.getEndDate() != null ? dto.getEndDate() : existingBooking.getEndDate();
 
-        // 1. Update Booking fields
+        boolean datesWereModified = 
+            !newStartDate.isEqual(existingBooking.getStartDate()) || 
+            !newEndDate.isEqual(existingBooking.getEndDate());
+
+        long days = calculateDurationDays(newStartDate, newEndDate);
+        
+        if (datesWereModified) {
+            
+            Long carId = existingBooking.getCar().getId();
+            
+            boolean isOverlapping = bookingRepo.existsOverlappingBookingExcludingId(
+                carId,
+                newStartDate, 
+                newEndDate,
+                id 
+            );
+
+            if (isOverlapping) {
+                throw new CarUnavailableException(
+                    "The updated dates (" + newStartDate + " to " + newEndDate + 
+                    ") conflict with another existing booking for car ID: " + carId
+                );
+            }
+        }
+        
         existingBooking.setStartDate(newStartDate);
         existingBooking.setEndDate(newEndDate);
         
@@ -143,10 +172,7 @@ public class BookingServiceImpl implements BookingService{
             existingBooking.setBookingStatus(dto.getBookingStatus());
         }
 
-        // 2. Recalculate TotalPrice based on new dates (FIXED: Used existing car's rate)
-        long days = calculateDurationDays(newStartDate, newEndDate);
         BigDecimal carDailyRate = existingBooking.getCar().getDailyRate(); 
-        
         BigDecimal totalPrice = carDailyRate.multiply(BigDecimal.valueOf(days));
         existingBooking.setTotalPrice(totalPrice);
 
