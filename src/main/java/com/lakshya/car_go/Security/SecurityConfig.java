@@ -2,11 +2,19 @@ package com.lakshya.car_go.Security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import lombok.RequiredArgsConstructor;
+
 @Configuration
+@RequiredArgsConstructor
+@EnableMethodSecurity
+
 public class SecurityConfig {
+
+    // define the properties
     // define the bean
     @Bean
     public PasswordEncoder passwordEncoder(){
