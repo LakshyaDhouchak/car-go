@@ -132,6 +132,5 @@ PUT     |  /bookings/{id}        |   Update booking (dates/status; re-che
 
 DELETE  |  /bookings/{id}        |   Delete/cancel booking                                |   Auth Required (Own)
 
-<img width="925" height="524" alt="image" src="https://github.com/user-attachments/assets/340c30b1-f7e5-445b-a5fa-62fbd5bbe26d" />
 
 
