@@ -114,5 +114,39 @@ Sample error response:
 | **`PUT`** | `/bookings/{id}` | Update booking (dates/status; **re-check overlaps**) | Auth Required (Own) |
 | **`DELETE`** | `/bookings/{id}` | Delete/cancel booking | Auth Required (Own) |
 
+---
+---
+
+## 🛠 Project Setup & Quick Start
+
+Get the Car-Go service running on your local machine in minutes!
+
+### Build and Run
+
+1.  **Clone the Repository:**
+    ```bash
+    git clone [https://github.com/your-org/car-go.git](https://github.com/your-org/car-go.git)
+    cd car-go
+    ```
+2.  **Build and Start:**
+    ```bash
+    mvn clean install
+    mvn spring-boot:run  # Starts on http://localhost:8080
+    ```
+
+### ⚙️ Configuration Essentials
+
+Update your database and security settings in `src/main/resources/application.properties`.
+
+| Area | Key Properties | Default Values (Change These!) |
+| :--- | :--- | :--- |
+| **Database (MySQL)** | `spring.datasource.url` | `jdbc:mysql://localhost:3306/carrentaldb` |
+| | `spring.datasource.password` | `lakshya5911` |
+| **Security (JWT)** | `jwt.secret` | `yourSecretKey` (Must be strong for production) |
+| **Logging** | `logging.level.com.lakshya.car_go` | `DEBUG` (Good for development) |
+
+---
+
+
 
 
