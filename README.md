@@ -55,247 +55,46 @@ Sample error response:
 📂 API Endpoints
 Base URL: http://localhost:8080/api | Format: JSON | Security: Extend with JWT for production.
 
+📂 API Endpoints
+
 👥 User Management
-Secure profiles with email uniqueness and role assignment.
+Method	   Endpoint   	         Purpose	                                            Security Notes
+----------------------------------------------------------------------------------------------------------------
+POST	     /users/register	     Register new user (hashes password)	                Public
+GET      	 /users/{id}	         Get user by ID	                                      Auth Required (JWT)
+GET      	 /users	               List all users	                                      Admin Only (Role Check)
+PUT	       /users/{id}	         Update user (email, password, firstName)	            Auth Required (Own User)
+DELETE	   /users/{id}	         Delete user by ID	                                  Admin Only
 
-Method
-
-Endpoint
-
-Purpose
-
-Security Notes
-
-POST
-
-/users/register
-
-Register new user (hashes password)
-
-Public
-
-GET
-
-/users/{id}
-
-Get user by ID
-
-Auth Required
-
-GET
-
-/users
-
-List all users
-
-Admin Only
-
-PUT
-
-/users/{id}
-
-Update user (email, password, firstName)
-
-Auth Required
-
-DELETE
-
-/users/{id}
-
-Delete user by ID
-
-Admin Only
 
 📍 Location Management
-Handle global rental spots (unique by name + address).
+Method   	Endpoint	            Purpose	                                               Security Notes
+-----------------------------------------------------------------------------------------------------------------
+POST    	/locations	          Create new location                       	           Auth Required (Admin)
+GET	      /locations/{id}	      Get location by ID                        	           Public
+GET	      /locations	          List all locations	                                   Public
+PUT	      /locations/{id}  	    Update location (partial)	                             Auth Required (Admin)
+DELETE	  /locations/{id}	      Delete location by ID	                                 Admin Only
 
-Method
-
-Endpoint
-
-Purpose
-
-Security Notes
-
-POST
-
-/locations
-
-Create new location
-
-Auth Required
-
-GET
-
-/locations/{id}
-
-Get location by ID
-
-Public
-
-GET
-
-/locations
-
-List all locations
-
-Public
-
-PUT
-
-/locations/{id}
-
-Update location (partial)
-
-Auth Required
-
-DELETE
-
-/locations/{id}
-
-Delete location by ID
-
-Admin Only
 
 🚙 Car Management
-Inventory with status and pricing (link to locations).
+Method	  Endpoint	             Purpose                                    	         Security Notes
+-----------------------------------------------------------------------------------------------------------------
+POST	   /cars	                 Create new car (auto: "Available")	                   Auth Required (Admin)
+GET	     /cars/{licensePlate}	   Get car by license plate	                             Public
+GET	     /cars	                 List all cars	                                       Public
+PUT	     /cars/{licensePlate}	   Update car (rate, status, location)       	           Auth Required (Admin)
+DELETE	 /cars/{licensePlate}	   Delete car by license plate	                         Admin Only
 
-Method
-
-Endpoint
-
-Purpose
-
-Security Notes
-
-POST
-
-/cars
-
-Create new car (auto: "Available")
-
-Auth Required
-
-GET
-
-/cars/{licensePlate}
-
-Get car by license plate
-
-Public
-
-GET
-
-/cars
-
-List all cars
-
-Public
-
-PUT
-
-/cars/{licensePlate}
-
-Update car (rate, status, location)
-
-Auth Required
-
-DELETE
-
-/cars/{licensePlate}
-
-Delete car by license plate
-
-Admin Only
 
 📅 Booking Management
-Reservations with overlap checks and auto-pricing.
+Method	  Endpoint	             Purpose	                                              Security Notes
+-----------------------------------------------------------------------------------------------------------------
+POST	    /bookings	             Create booking (check availability, calc price)	      Auth Required (User)
+GET	      /bookings/{id}	       Get booking by ID	                                    Auth Required (Own/User)
+GET	      /bookings	             List all bookings	                                    Admin Only
+PUT	      /bookings/{id}	       Update booking (dates/status; re-check overlaps)     	Auth Required (Own)
+DELETE	  /bookings/{id}	       Delete/cancel booking	                                Auth Required (Own)
 
-Method
 
-Endpoint
-
-Purpose
-
-Security Notes
-
-POST
-
-/bookings
-
-Create booking (check availability, calc price)
-
-Auth Required
-
-GET
-
-/bookings/{id}
-
-Get booking by ID
-
-Auth Required
-
-GET
-
-/bookings
-
-List all bookings
-
-Admin Only
-
-PUT
-
-/bookings/{id}
-
-Update booking (dates/status; re-check overlaps)
-
-Auth Required
-
-DELETE
-
-/bookings/{id}
-
-Delete/cancel booking
-
-Auth Required
-
-📝 Example Requests
-User Registration
-
-Run
-Copy code
-POST /api/users/register
-Content-Type: application/json
-
-{
-  "email": "user@rent.com",
-  "password": "SecurePass123",
-  "firstName": "Alex"
-}
-Response (201): {"id":1,"email":"user@rent.com","role":"User ","firstName":"Alex"}
-
-Create Booking (with Overlap Check)
-
-Run
-Copy code
-POST /api/bookings
-Authorization: Bearer <JWT>  // Future: Add JWT
-Content-Type: application/json
-
-{
-  "userId": 1,
-  "carId": 1,
-  "startDate": "2024-01-15",
-  "endDate": "2024-01-20"
-}
-Response (201): {"id":1,"userId":1,"carId":1,"startDate":"2024-01-15","endDate":"2024-01-20","bookingStatus":"Booked","totalPrice":250.00}
-
-Error Example (Overlap): 409 Conflict with message about unavailable dates.
-
-Get All Cars
-
-Run
-Copy code
-GET /api/cars
-Response (200): [{"id":1,"licensePlate":"ABC-123","dailyRate":50.00,"carStatus":"Available","currentLocationId":1,"currentLocationName":"Downtown"}]
 
