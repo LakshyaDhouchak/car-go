@@ -10,7 +10,6 @@
 
 **A robust Spring Boot backend for car rental management. Handle users, locations, cars, and bookings with smart overlap detection, secure hashing, and clean REST APIs!**
 
-![Car-Go Banner](https://via.placeholder.com/800x200/007BFF/FFFFFF?text=Car-Go+API+-+Rent+Smart%2C+Drive+Easy) <!-- Replace with a car-themed image or GIF -->
 
 > *Power your car rental business with seamless bookings, real-time availability, and scalable backend magic. From user sign-ups to conflict-free reservations – drive ahead!*
 
