@@ -11,7 +11,7 @@
 **A robust Spring Boot backend for car rental management. Handle users, locations, cars, and bookings with smart overlap detection, secure hashing, and clean REST APIs!**
 
 
-> *Power your car rental business with seamless bookings, real-time availability, and scalable backend magic. From user sign-ups to conflict-free reservations – drive ahead!*
+> *Power your car rental business with seamless bookings, real-time availability, and scalable backend magic. From conflict-free reservations – drive ahead!*
 
 </div>
 
