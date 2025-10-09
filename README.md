@@ -59,13 +59,12 @@ Sample error response:
 ##📂 API Endpoints
 
 ###👥 User Management
-Method	 |  Endpoint   	        |     Purpose	                                   |         Security Notes
-----------------------------------------------------------------------------------------------------------------
-POST	   |   /users/register	  |   Register new user (hashes password)	         |       Public
-GET      |	 /users/{id}	      |   Get user by ID	                             |         Auth Required (JWT)
-GET      |	 /users	            |   List all users	                             |        Admin Only (Role Check)
-PUT	     |   /users/{id}	      |   Update user (email, password, firstName)	   |         Auth Required (Own User)
-DELETE	 |   /users/{id}	      |   Delete user by ID	                           |       Admin Only
+Method	  Endpoint   	            Purpose	                                         Security Notes
+POST	      /users/register	       Register new user (hashes password)	             Public
+GET      	  /users/{id}	           Get user by ID	                                   Auth Required (JWT)
+GET      	  /users	               List all users	                                   Admin Only (Role Check)
+PUT	        /users/{id}	           Update user (email, password, firstName)	         Auth Required (Own User)
+DELETE	    /users/{id}	           Delete user by ID	                               Admin Only
 
 
 ###📍 Location Management
