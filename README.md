@@ -53,74 +53,63 @@ Sample error response:
   "timeStamp": "2024-01-01T12:00:00Z"
 }
 ```
-📂 API Endpoints
+## 🔗 API Details
 
-Base URL: http://localhost:8080/api | Format: JSON | Security: Extend with JWT for production.
+| Detail | Value |
+| :--- | :--- |
+| **Base URL** | `http://localhost:8080/api` |
+| **Data Format** | JSON |
+| **Security Note** | Extend with **JSON Web Tokens (JWT)** for production environments to handle authentication. |
 
-###👥 User Management
-Method  | Endpoint            | Purpose                                      | Security Notes
-
-----------------------------------------------------------------------------------------------------------------
-
-POST    | /users/register   | Register new user (hashes password)            | Public
-
-GET     | /users/{id}       | Get user by ID                                 | Auth Required (JWT)
-
-GET     | /users            | List all users                                 | Admin Only (Role Check)
-
-PUT     | /users/{id}       | Update user (email, password, firstName)       | Auth Required (Own User)
-
-DELETE  | /users/{id}       | Delete user by ID                              | Admin Only
-
-
-###📍 Location Management
-Method   | Endpoint            | Purpose                                       | Security Notes
-
------------------------------------------------------------------------------------------------------------------
-
-POST     | /locations          | Create new location                            | Auth Required (Admin)
-
-GET      | /locations/{id}     | Get location by ID                             | Public
-
-GET      | /locations          | List all locations                             | Public
-
-PUT      | /locations/{id}     | Update location (partial)                      | Auth Required (Admin)
-
-DELETE   | /locations/{id}     | Delete location by ID                          | Admin Only
+---
 
 
 
-###🚙 Car Management
-Method  | Endpoint              | Purpose                                         | Security Notes
+## 👥 User Management
 
------------------------------------------------------------------------------------------------------------------
+| Method | Endpoint | Purpose | Security Notes |
+| :--- | :--- | :--- | :--- |
+| **`POST`** | `/users/register` | Register new user (**hashes password**) | Public |
+| **`GET`** | `/users/{id}` | Get user by ID | Auth Required (JWT) |
+| **`GET`** | `/users` | List all users | **Admin Only** (Role Check) |
+| **`PUT`** | `/users/{id}` | Update user (email, password, firstName) | Auth Required (Own User) |
+| **`DELETE`** | `/users/{id}` | Delete user by ID | **Admin Only** |
 
-POST    | /cars                 | Create new car (auto: "Available")               | Auth Required (Admin)
+---
 
-GET     | /cars/{licensePlate}  | Get car by license plate                         | Public
+## 📍 Location Management
 
-GET     | /cars                 | List all cars                                    | Public
+| Method | Endpoint | Purpose | Security Notes |
+| :--- | :--- | :--- | :--- |
+| **`POST`** | `/locations` | Create new location | Auth Required (Admin) |
+| **`GET`** | `/locations/{id}` | Get location by ID | Public |
+| **`GET`** | `/locations` | List all locations | Public |
+| **`PUT`** | `/locations/{id}` | Update location (partial) | Auth Required (Admin) |
+| **`DELETE`** | `/locations/{id}` | Delete location by ID | **Admin Only** |
 
-PUT     | /cars/{licensePlate}  | Update car (rate, status, location)              | Auth Required (Admin)
+---
 
-DELETE  | /cars/{licensePlate}  | Delete car by license plate                      | Admin Only
+## 🚙 Car Management
 
+| Method | Endpoint | Purpose | Security Notes |
+| :--- | :--- | :--- | :--- |
+| **`POST`** | `/cars` | Create new car (**auto: "Available"** status) | Auth Required (Admin) |
+| **`GET`** | `/cars/{licensePlate}` | Get car by license plate | Public |
+| **`GET`** | `/cars` | List all cars | Public |
+| **`PUT`** | `/cars/{licensePlate}` | Update car (rate, status, location) | Auth Required (Admin) |
+| **`DELETE`** | `/cars/{licensePlate}` | Delete car by license plate | **Admin Only** |
 
+---
 
-###📅 Booking Management
-Method  | Endpoint              | Purpose                                              | Security Notes
+## 📅 Booking Management
 
------------------------------------------------------------------------------------------------------------------
-
-POST    | /bookings             | Create booking (check availability, calc price)      | Auth Required (User)
-
-GET     | /bookings/{id}        | Get booking by ID                                    | Auth Required (Own/User)
-
-GET     | /bookings             | List all bookings                                    | Admin Only
-
-PUT     | /bookings/{id}        | Update booking (dates/status; re-check overlaps)     | Auth Required (Own)
-
-DELETE  | /bookings/{id}        | Delete/cancel booking                                | Auth Required (Own)
+| Method | Endpoint | Purpose | Security Notes |
+| :--- | :--- | :--- | :--- |
+| **`POST`** | `/bookings` | Create booking (check availability, calculate price) | Auth Required (User) |
+| **`GET`** | `/bookings/{id}` | Get booking by ID | Auth Required (Own/User) |
+| **`GET`** | `/bookings` | List all bookings | **Admin Only** |
+| **`PUT`** | `/bookings/{id}` | Update booking (dates/status; **re-check overlaps**) | Auth Required (Own) |
+| **`DELETE`** | `/bookings/{id}` | Delete/cancel booking | Auth Required (Own) |
 
 
 
