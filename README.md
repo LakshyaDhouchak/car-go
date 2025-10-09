@@ -44,9 +44,6 @@ This ensures:
 - No stack traces leaked to clients.
 
 
-📂 API Endpoints
-Base URL: http://localhost:8080/api | Format: JSON | Security: Extend with JWT for production.
-
 Sample error response:
 ```json
 {
@@ -56,81 +53,74 @@ Sample error response:
   "timeStamp": "2024-01-01T12:00:00Z"
 }
 ```
+📂 API Endpoints
 
-##📂 API Endpoints
+Base URL: http://localhost:8080/api | Format: JSON | Security: Extend with JWT for production.
 
-Base URL: http://localhost:8080/api
 ###👥 User Management
-
-Method  |  Endpoint            |     Purpose                                    |         Security Notes
+Method  | Endpoint            | Purpose                                      | Security Notes
 
 ----------------------------------------------------------------------------------------------------------------
 
-POST    |   /users/register   |   Register new user (hashes password)            |       Public
+POST    | /users/register   | Register new user (hashes password)            | Public
 
-GET     |   /users/{id}       |   Get user by ID                                 |       Auth Required (JWT)
+GET     | /users/{id}       | Get user by ID                                 | Auth Required (JWT)
 
-GET     |   /users            |   List all users                                 |       Admin Only (Role Check)
+GET     | /users            | List all users                                 | Admin Only (Role Check)
 
-PUT     |   /users/{id}       |   Update user (email, password, firstName)       |       Auth Required (Own User)
+PUT     | /users/{id}       | Update user (email, password, firstName)       | Auth Required (Own User)
 
-DELETE  |   /users/{id}       |   Delete user by ID                              |       Admin Only
-
-
-
+DELETE  | /users/{id}       | Delete user by ID                              | Admin Only
 
 
 ###📍 Location Management
-
-Method   | Endpoint            |   Purpose                                       |        Security Notes
+Method   | Endpoint            | Purpose                                       | Security Notes
 
 -----------------------------------------------------------------------------------------------------------------
 
-POST     | /locations          |  Create new location                            |      Auth Required (Admin)
+POST     | /locations          | Create new location                            | Auth Required (Admin)
 
-GET      | /locations/{id}     |  Get location by ID                             |      Public
+GET      | /locations/{id}     | Get location by ID                             | Public
 
-GET      | /locations          |  List all locations                             |      Public
+GET      | /locations          | List all locations                             | Public
 
-PUT      | /locations/{id}     |  Update location (partial)                      |      Auth Required (Admin)
+PUT      | /locations/{id}     | Update location (partial)                      | Auth Required (Admin)
 
-DELETE   | /locations/{id}     |  Delete location by ID                          |      Admin Only
+DELETE   | /locations/{id}     | Delete location by ID                          | Admin Only
 
 
 
 ###🚙 Car Management
-
-Method  |  Endpoint              |    Purpose                                         |     Security Notes
+Method  | Endpoint              | Purpose                                         | Security Notes
 
 -----------------------------------------------------------------------------------------------------------------
 
-POST    |  /cars                 |   Create new car (auto: "Available")               |      Auth Required (Admin)
+POST    | /cars                 | Create new car (auto: "Available")               | Auth Required (Admin)
 
-GET     |  /cars/{licensePlate}  |   Get car by license plate                         |      Public
+GET     | /cars/{licensePlate}  | Get car by license plate                         | Public
 
-GET     |  /cars                 |   List all cars                                    |      Public
+GET     | /cars                 | List all cars                                    | Public
 
-PUT     |  /cars/{licensePlate}  |   Update car (rate, status, location)              |      Auth Required (Admin)
+PUT     | /cars/{licensePlate}  | Update car (rate, status, location)              | Auth Required (Admin)
 
-DELETE  |  /cars/{licensePlate}  |   Delete car by license plate                      |      Admin Only
+DELETE  | /cars/{licensePlate}  | Delete car by license plate                      | Admin Only
 
 
 
 ###📅 Booking Management
-
-Method  |  Endpoint              |  Purpose                                              |  Security Notes
+Method  | Endpoint              | Purpose                                              | Security Notes
 
 -----------------------------------------------------------------------------------------------------------------
 
-POST    |  /bookings             |   Create booking (check availability, calc price)      |   Auth Required (User)
+POST    | /bookings             | Create booking (check availability, calc price)      | Auth Required (User)
 
-GET     |  /bookings/{id}        |   Get booking by ID                                    |   Auth Required (Own/User)
+GET     | /bookings/{id}        | Get booking by ID                                    | Auth Required (Own/User)
 
-GET     |  /bookings             |   List all bookings                                    |   Admin Only
+GET     | /bookings             | List all bookings                                    | Admin Only
 
-PUT     |  /bookings/{id}        |   Update booking (dates/status; re-check overlaps)     |   Auth Required (Own)
+PUT     | /bookings/{id}        | Update booking (dates/status; re-check overlaps)     | Auth Required (Own)
 
-DELETE  |  /bookings/{id}        |   Delete/cancel booking                                |   Auth Required (Own)
+DELETE  | /bookings/{id}        | Delete/cancel booking                                | Auth Required (Own)
 
 
 
