@@ -47,9 +47,18 @@ This ensures:
 📂 API Endpoints
 Base URL: http://localhost:8080/api | Format: JSON | Security: Extend with JWT for production.
 
-📂 API Endpoints
+Sample error response:
+```json
+{
+  "message": "Car is already booked for the specified date range (2024-01-01 to 2024-01-05).",
+  "status": 409,
+  "error": "CONFLICT",
+  "timeStamp": "2024-01-01T12:00:00Z"
+}
 
-👥 User Management
+##📂 API Endpoints
+
+###👥 User Management
 Method	   Endpoint   	         Purpose	                                            Security Notes
 ----------------------------------------------------------------------------------------------------------------
 POST	     /users/register	     Register new user (hashes password)	                Public
@@ -59,7 +68,7 @@ PUT	       /users/{id}	         Update user (email, password, firstName)	       
 DELETE	   /users/{id}	         Delete user by ID	                                  Admin Only
 
 
-📍 Location Management
+###📍 Location Management
 Method   	Endpoint	            Purpose	                                               Security Notes
 -----------------------------------------------------------------------------------------------------------------
 POST    	/locations	          Create new location                       	           Auth Required (Admin)
@@ -69,7 +78,7 @@ PUT	      /locations/{id}  	    Update location (partial)	                      
 DELETE	  /locations/{id}	      Delete location by ID	                                 Admin Only
 
 
-🚙 Car Management
+###🚙 Car Management
 Method	  Endpoint	             Purpose                                    	         Security Notes
 -----------------------------------------------------------------------------------------------------------------
 POST	   /cars	                 Create new car (auto: "Available")	                   Auth Required (Admin)
@@ -79,7 +88,7 @@ PUT	     /cars/{licensePlate}	   Update car (rate, status, location)       	    
 DELETE	 /cars/{licensePlate}	   Delete car by license plate	                         Admin Only
 
 
-📅 Booking Management
+###📅 Booking Management
 Method	  Endpoint	             Purpose	                                              Security Notes
 -----------------------------------------------------------------------------------------------------------------
 POST	    /bookings	             Create booking (check availability, calc price)	      Auth Required (User)
