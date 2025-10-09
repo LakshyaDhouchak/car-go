@@ -279,10 +279,9 @@ We're an open-source project and welcome community support and contributions!
 
 | Resource | Link/Details |
 | :--- | :--- |
-| **Repo** | `github.com/yourusername/car-go` |
-| **Issues** | **[Report Here]** (Use the issues tab for bugs/suggestions) |
-| **Email** | `your-email@example.com` |
-| **Twitter** | `@yourhandle` |
+| **Repo** | `https://github.com/LakshyaDhouchak/car-go` |
+| **Issues** | **`https://github.com/LakshyaDhouchak/car-go/issues`** |
+| **Email** | `lakshya10171@gmail.com` |
 
 ### 📄 License
 
