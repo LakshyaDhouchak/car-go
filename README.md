@@ -43,14 +43,6 @@ This ensures:
 - Standardized JSON responses with timestamp, status, and error type.
 - No stack traces leaked to clients.
 
-Sample error response:
-```json
-{
-  "message": "Car is already booked for the specified date range (2024-01-01 to 2024-01-05).",
-  "status": 409,
-  "error": "CONFLICT",
-  "timeStamp": "2024-01-01T12:00:00Z"
-}
 
 📂 API Endpoints
 Base URL: http://localhost:8080/api | Format: JSON | Security: Extend with JWT for production.
