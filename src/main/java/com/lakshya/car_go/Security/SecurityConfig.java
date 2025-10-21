@@ -15,34 +15,59 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Main Spring Security Configuration class.
+ * Configures password encoder, security filter chain, and authentication manager.
+ */
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    // define the properties
-    // define the bean
+    // CORRECTION: This dependency was missing and caused a runtime error. 
+    // It is injected here via @RequiredArgsConstructor.
+    private final JwtRequestFilter jwtAuthFilter;
+
+    // Define the PasswordEncoder bean for use in the authentication process.
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Configures the main security filter chain.
+     * Disables CSRF, sets session management to stateless, defines authorization rules,
+     * and adds the JwtRequestFilter before the standard authentication filter.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-        http.csrf(csrf -> csrf.disable()).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(auth -> auth
+        http
+            // Disable CSRF protection as JWT is used and state is handled by the token
+            .csrf(csrf -> csrf.disable())
+            
+            // Set session policy to STATELESS, meaning no session will be created or used 
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            
+            // Configure authorization rules
+            .authorizeHttpRequests(auth -> auth
+                // Allow unauthenticated access to registration and login endpoints
                 .requestMatchers("/api/users/register", "/api/auth/login").permitAll()
+                // Require authentication for all other requests
                 .anyRequest().authenticated()
             )
+            
+            // Add the custom JWT filter before Spring's default authentication filter
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();    
     }
 
+    /**
+     * Exposes the AuthenticationManager bean, which is required by AuthController.
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
-
 }

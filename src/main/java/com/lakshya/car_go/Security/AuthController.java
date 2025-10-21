@@ -1,9 +1,5 @@
 package com.lakshya.car_go.Security;
 
-import com.lakshya.car_go.Security.CustomUserDetailService;
-import com.lakshya.car_go.Security.JwtService;
-import com.lakshya.car_go.Security.LoginRequestDTO;
-import com.lakshya.car_go.Security.LoginResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * REST controller for handling authentication requests (login).
+ * Inject dependencies for AuthenticationManager, JwtService, and CustomUserDetailService.
+ */
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -23,15 +23,21 @@ public class AuthController {
     private final JwtService jwtService;
     private final CustomUserDetailService userDetailsService;
 
+    /**
+     * Handles user login by authenticating credentials and issuing a JWT.
+     * @param request The LoginRequestDTO containing email and password.
+     * @return A LoginResponseDTO containing the generated JWT and the user's email.
+     */
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO request) {
         
-        // 1. Authenticate the user credentials using the AuthenticationManager
+        // 1. Authenticate the user credentials using the AuthenticationManager.
+        // This will check credentials against the UserDetailsService and PasswordEncoder.
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
         
-        // 2. Load UserDetails after successful authentication
+        // 2. Load UserDetails after successful authentication to generate the token.
         final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
         
         // 3. Generate JWT
