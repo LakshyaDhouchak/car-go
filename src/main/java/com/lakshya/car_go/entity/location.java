@@ -24,6 +24,6 @@ public class location {
     private String name;
 
     @Column(nullable = false, length = 100)
-    private String Address;
+    private String address;
     
 }
