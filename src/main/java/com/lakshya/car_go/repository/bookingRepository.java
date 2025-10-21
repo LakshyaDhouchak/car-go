@@ -11,8 +11,8 @@ import com.lakshya.car_go.entity.booking;
 public interface bookingRepository extends JpaRepository<booking,Long> {
     
     @Query("SELECT CASE WHEN COUNT(b) > 0 THEN true ELSE false END "+
-           "FROM booking b"+
-           "WHERE b.car.id = :carId" +
+           "FROM booking b "+
+           "WHERE b.car.id = :carId " +
            "AND (:startDate <= b.endDate AND :endDate >= b.startDate)")
     boolean existOverlapping(@Param("carId") Long carId, @Param("startDate") LocalDate startDate ,@Param("endDate") LocalDate endDate);
 
