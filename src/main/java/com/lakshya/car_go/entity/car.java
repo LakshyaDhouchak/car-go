@@ -30,7 +30,7 @@ public class car {
     @Column(name = "daily_rate",nullable = false,precision = 10, scale = 2)
     private BigDecimal dailyRate;
 
-    @Column(name = "Carstatus",nullable=false,length = 12)
+    @Column(name = "Car_status",nullable=false,length = 12)
     private String carStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
