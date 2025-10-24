@@ -1,6 +1,7 @@
 package com.lakshya.car_go.service;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.lakshya.car_go.ExceptionHandling.CarUnavailableException;
 import com.lakshya.car_go.ExceptionHandling.InvalidInputException;
 import com.lakshya.car_go.ExceptionHandling.ResourceNotFoundException;
+import com.lakshya.car_go.Kafka.BookingConfirmationEvent;
+import com.lakshya.car_go.Kafka.KafkaProducerService;
 import com.lakshya.car_go.dto.BookingCreateRequestDTO;
 import com.lakshya.car_go.dto.BookingResponseDTO;
 import com.lakshya.car_go.dto.BookingUpdateRequestDTO;
@@ -29,11 +32,13 @@ public class BookingServiceImpl implements BookingService{
     private final bookingRepository bookingRepo;
     private final userRepository userRepo;
     private final carRepository carRepo;
+    private final KafkaProducerService kafkaProducerService;
     
-    public BookingServiceImpl(bookingRepository bookingRepo,userRepository userRepo, carRepository carRepo){
+    public BookingServiceImpl(bookingRepository bookingRepo,userRepository userRepo, carRepository carRepo,KafkaProducerService kafkaProducer){
         this.bookingRepo = bookingRepo;
         this.userRepo = userRepo;
         this.carRepo = carRepo;
+        this.kafkaProducerService = kafkaProducer;
     }
 
     private BookingResponseDTO mapToResponseDTO(booking booking){
@@ -110,6 +115,16 @@ public class BookingServiceImpl implements BookingService{
         // carRepo.save(carFound);
         
         booking savedBooking = bookingRepo.save(newBooking);
+        String summary = String.format(
+            "Car: %s, Dates: %s to %s, Total: %s",
+            savedBooking.getCar().getLicensePlate(),
+            savedBooking.getStartDate(),
+            savedBooking.getEndDate(),
+            savedBooking.getTotalPrice()
+        );
+        // calling the Object class
+        BookingConfirmationEvent event = new BookingConfirmationEvent(String.valueOf(savedBooking.getId()),savedBooking.getUser().getEmail(),summary , Instant.now());
+        kafkaProducerService.sendBookingConfirmation(event);
         return mapToResponseDTO(savedBooking);
     }
 
@@ -177,6 +192,16 @@ public class BookingServiceImpl implements BookingService{
         existingBooking.setTotalPrice(totalPrice);
 
         booking savedBooking = bookingRepo.save(existingBooking);
+        String summary = String.format(
+            "Car: %s, Dates: %s to %s, Total: %s",
+            savedBooking.getCar().getLicensePlate(),
+            savedBooking.getStartDate(),
+            savedBooking.getEndDate(),
+            savedBooking.getTotalPrice()
+        );
+        // calling the Object class
+        BookingConfirmationEvent event = new BookingConfirmationEvent(String.valueOf(savedBooking.getId()),savedBooking.getUser().getEmail(),summary , Instant.now());
+        kafkaProducerService.sendBookingConfirmation(event);
         return mapToResponseDTO(savedBooking);
     }
 
